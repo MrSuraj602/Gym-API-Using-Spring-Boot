@@ -1,39 +1,55 @@
 package com.MrEnineer.Gym.Service;
 
 import com.MrEnineer.Gym.Entity.User;
+import com.MrEnineer.Gym.Entity.UserRole;
 import com.MrEnineer.Gym.Repository.UserRepository;
+import com.MrEnineer.Gym.dto.LoginRequest;
 import com.MrEnineer.Gym.dto.RegisterRequest;
 import com.MrEnineer.Gym.dto.UserResponse;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponse register(RegisterRequest user) {
+        UserRole role = user.getRole() != null ? user.getRole() : UserRole.USER;
         User newUser = User.builder()
                 .firstName(user.getFirstName())
-                .lastName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
-                .password(user.getPassword())
+                .role(role)
+                .password(passwordEncoder.encode(user.getPassword()))
                 .build();
 
-        User saveUser = userRepository.save(newUser);
+        userRepository.save(newUser);
+         return mapToResponse(newUser);
+    }
 
-        UserResponse response = new UserResponse();
+    public UserResponse mapToResponse(User savedUser){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(savedUser.getId());
+        userResponse.setEmail(savedUser.getEmail());
+        userResponse.setPassword(savedUser.getPassword());
+        userResponse.setFirstName(savedUser.getFirstName());
+        userResponse.setLastName(savedUser.getLastName());
+        userResponse.setCreatedAt(savedUser.getCreatedAt());
+        userResponse.setUpdatedAt(savedUser.getUpdatedAt());
 
-        response.setEmail(saveUser.getEmail());
-        response.setPassword(saveUser.getPassword());
-        response.setId(saveUser.getId());
-        response.setFirstName(saveUser.getFirstName());
-        response.setLastName(saveUser.getLastName());
-        response.setCreatedAt(saveUser.getCreatedAt());
-        response.setUpdatedAt(saveUser.getUpdatedAt());
+        return userResponse;
+    }
 
-        return response;
+    public User authenticate(LoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if(user == null) throw new RuntimeException("Invalid Credentials");
+        if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword() )){
+            throw new RuntimeException("Invalid Credentials");
+        }
+        return user;
     }
 }
