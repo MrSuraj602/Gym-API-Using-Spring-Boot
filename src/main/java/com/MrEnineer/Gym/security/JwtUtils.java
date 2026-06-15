@@ -29,7 +29,7 @@ public class JwtUtils {
                 .subject(userId)
                 .claim("roles", List.of(role))
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+1000*60*10))
+                .expiration(new Date(System.currentTimeMillis()+1000*60*60))
                 .signWith(getSecretKey())
                 .compact();
 
@@ -37,7 +37,7 @@ public class JwtUtils {
 
     public String getJwtFromHeader(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
-        if(bearerToken != null && bearerToken.startsWith("bearer ")){
+        if(bearerToken != null && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
         }
         return null;
@@ -48,6 +48,7 @@ public class JwtUtils {
             Jwts.parser().verifyWith(getSecretKey()).build().parseSignedClaims(jwtToken);
         }catch (Exception e){
             e.printStackTrace();
+            return false;
         }
         return true;
     }

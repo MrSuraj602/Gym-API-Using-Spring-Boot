@@ -8,6 +8,7 @@ import com.MrEnineer.Gym.dto.LoginResponse;
 import com.MrEnineer.Gym.dto.RegisterRequest;
 import com.MrEnineer.Gym.dto.UserResponse;
 import com.MrEnineer.Gym.security.JwtUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +34,13 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> register(@RequestBody RegisterRequest user){
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest user){
 
         return ResponseEntity.ok(userService.register(user));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
         try{
             User user = userService.authenticate(loginRequest);
             String jwtToken = jwtUtils.generateAccessToken(user.getId(),user.getRole().name());

@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User extends UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -50,7 +50,7 @@ public class User extends UserDetails {
     @JsonIgnore
     private List<Recommendation> recommendations = new ArrayList<>();
 
-    @Override
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
