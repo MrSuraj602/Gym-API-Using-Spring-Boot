@@ -4,6 +4,7 @@ import com.MrEnineer.Gym.Service.RecommendationService;
 import com.MrEnineer.Gym.dto.ActivityResponse;
 import com.MrEnineer.Gym.dto.RecommendationRequest;
 import com.MrEnineer.Gym.dto.RecommendationResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,12 @@ public class RecommendationController {
 
     @PostMapping("/generate")
     public ResponseEntity<RecommendationResponse> generate(@RequestBody RecommendationRequest recommendationRequest) {
-        return ResponseEntity.ok(recommendationService.generate(recommendationRequest));
+        try {
+            RecommendationResponse request = recommendationService.generate(recommendationRequest);
+            return ResponseEntity.ok(request);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/user/{userId}")

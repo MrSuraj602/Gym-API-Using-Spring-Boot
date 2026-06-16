@@ -34,6 +34,12 @@ public class User {
 
     private String password;
 
+    private int age;
+    private int weight;
+    private int height;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

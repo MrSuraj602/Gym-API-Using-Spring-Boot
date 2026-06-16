@@ -1,5 +1,6 @@
 package com.MrEnineer.Gym.dto;
 
+import com.MrEnineer.Gym.Entity.Gender;
 import com.MrEnineer.Gym.Entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -20,4 +21,8 @@ public class RegisterRequest {
     private String email;
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
+    private int age;
+    private int weight;
+    private int height;
+    private Gender gender;
 }

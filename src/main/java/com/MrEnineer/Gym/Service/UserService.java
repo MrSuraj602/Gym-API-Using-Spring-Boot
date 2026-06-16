@@ -1,5 +1,6 @@
 package com.MrEnineer.Gym.Service;
 
+import com.MrEnineer.Gym.Entity.Gender;
 import com.MrEnineer.Gym.Entity.User;
 import com.MrEnineer.Gym.Entity.UserRole;
 import com.MrEnineer.Gym.Repository.UserRepository;
@@ -19,12 +20,17 @@ public class UserService {
 
     public UserResponse register(RegisterRequest user) {
         UserRole role = user.getRole() != null ? user.getRole() : UserRole.USER;
+        Gender gender = user.getGender() != null ? user.getGender() : Gender.MALE;
         User newUser = User.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(role)
                 .password(passwordEncoder.encode(user.getPassword()))
+                .age(user.getAge())
+                .height(user.getHeight())
+                .gender(gender)
+                .weight(user.getWeight())
                 .build();
 
         userRepository.save(newUser);
