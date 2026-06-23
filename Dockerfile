@@ -1,42 +1,42 @@
-# Stage 1: Build stage using Maven and JDK
+# ==========================
+# Stage 1: Build Application
+# ==========================
 FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
-# Copy Maven wrapper and project files
-COPY mvnw .
-COPY mvnw.cmd .
-COPY .mvn .mvn
-COPY pom.xml .
+# Copy everything from project
+COPY . .
+
+# Give execute permission to Maven Wrapper
+RUN chmod +x mvnw
 
 # Build the application
-RUN chmod +x ./mvnw && \
-    ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Runtime stage using JRE (smaller image)
+
+# ==========================
+# Stage 2: Run Application
+# ==========================
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -g 1000 appuser && \
-    adduser -D -u 1000 -G appuser appuser
+# Create non-root user
+RUN addgroup -S appgroup && \
+    adduser -S appuser -G appgroup
 
-# Copy the built JAR from builder stage
+# Copy generated jar
 COPY --from=builder /app/target/*.jar app.jar
 
-# Change ownership to non-root user
-RUN chown -R appuser:appuser /app
+# Change ownership
+RUN chown appuser:appgroup app.jar
 
-# Switch to non-root user
+# Run as non-root user
 USER appuser
 
-# Expose the default Spring Boot port
+# Render provides PORT env variable
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1
-
-# Run the application
+# Start application
 ENTRYPOINT ["java", "-jar", "app.jar"]
