@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Maven
+target/
+.m2/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+.env
+
+# Build
+dist/
+build/
+node_modules/
+
+# Documentation
+docs/
+*.md
+README*
+HELP.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+
